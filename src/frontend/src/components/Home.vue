@@ -30,43 +30,21 @@
     </div>
 </template>
 <script>
-    import {mapState} from "vuex";
-
     export default {
-        data(){
+        data() {
             return {
-                searchWord : ''
-           }
+                searchWord: ""
+            };
         },
-        created(){
-         alert('홈에서 크리티드 실행됨')
-        }
-        ,
-        computed : {
-            ...mapState({
-                bugsmusic : (state)=> state.crawling.bugsmusic,
-                count:  (state) => state.crawling.count
-            })
+        created() {
+            alert('홈에서 크리티드 실행됨')
         },
-        methods : {
-            search(){
-                switch (this.searchWord) {
-                    case "축구":
-                        this.$store.dispatch('search/find',this.searchWord )
-                        break;
-                    case "영화":
-                        this.$store.dispatch('movie/search',this.searchWord )
-
-                        break;
-                    default:
-                        this.$store.dispatch('crawling/search',this.searchWord )
-                        break;
-
-                }
-
+        methods: {
+            search() {
+                this.$store.dispatch("search/find", this.searchWord)
             }
         }
-    }
+    };
 </script>
 
 <style scoped>

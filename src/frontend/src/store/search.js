@@ -1,39 +1,73 @@
-import axios from "axios";
 import router from '@/router';
+import axios from "axios";
 
 const  state = {
-    context:`http://localhost:5000/`
-}
-const actions = {
-    async find({commit},searchWord){
-        axios.get(state.context+`soccer/`+searchWord)
-            .then(({data})=>{
-                alert('서버갔다왔음'+data)
-                commit('SEARCH',data)
-                router.push('/soccer')
+    context : "http://localhost:5000",
+    searchWord : 'null',
+    pageNumber: '0',
+    list : [],
+    pages : [],
+    pager: {}
 
+}
+const actions ={
+               //구조분해 => Vue중 commit만 쓰겠음
+    async find({commit},searchWord){
+        alert('>>> '+searchWord)
+        commit("SEARCHWORD",searchWord)
+        switch (searchWord) {
+            case '영화': router.push("/Movie")
+                break
+            case '음악': router.push("/Music")
+                break
+            case '축구': router.push("/Soccer")
+                break
+        }
+
+    },
+
+    async transferPage({commit},payload){
+
+        axios.
+        get(`${state.context}/${payload.cate}/${payload.searchWord}/${payload.pageNumber}`)
+            .then(({data})=>{
+                commit("TRANSFER",data)
             })
-            .catch(()=>{
-                alert('통신 실패')
-            })
+            .catch()
+
     }
 
 }
-const  mutations ={
-    SEARCH (){}
+const mutations ={
+    MOVIE(state, data){
+        alert("영화 뮤테이션에서 결과 수 : " + data.count)
+        state.movies = []
+        state.pager = data.pager;
+        data.list.forEach(item => {
+            state.movies.push({
+                movieSeq: item.movieSeq,
+                rank: item.rank,
+                title: item.title,
+                rankDate: item.rankDate
+            });
+        });
+    },
+    SEARCHWORD(state, data){
+        alert(`뮤테이션:: ${data}`)
+        state.searchWord = data
+    },
+    TRANSFER(state,data){
+        state.pager = data.pager
+        state.list = data.list
+    }
 }
 
 
-const getters ={
-
-}
 
 export default{
-    name:'search',
-    namespaced:true,
+    name:"search",
+    namespaced: true,
     state,
     actions,
-    getters,
     mutations
-
 }

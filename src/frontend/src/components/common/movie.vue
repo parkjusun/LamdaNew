@@ -1,78 +1,70 @@
 <template>
     <div>
-        <h3>검색결과 : {{count}}</h3>
+        <a @click="myAlert('aaa')"></a>
         <v-simple-table>
             <template v-slot:default>
                 <thead>
                 <tr>
+                    <th class="text-left">No.</th>
                     <th class="text-left">순위</th>
-                    <th class="text-left">영화</th>
-                    <th>{{movie[0].rankDate}}</th>
-
+                    <th class="text-left">영화제목</th>
+                    <th class="text-left">집계일</th>
                 </tr>
                 </thead>
                 <tbody>
-
-                <tr v-for="item of movie" :key="item.movieSeq">
-                    <td>{{item.rank}}</td>
-                    <td colspan="2">{{item.title}}</td>
+                <tr v-for="item of list" :key="item.seq">
+                    <td>{{ item.movieSeq }}</td>
+                    <td>{{ item.rank}}</td>
+                    <td>{{ item.title }}</td>
+                    <td>{{ item.rankDate }}</td>
                 </tr>
                 </tbody>
-
             </template>
         </v-simple-table>
-
         <div class="text-center" >
-            <span v-if="this.prev" @click="prevpage">이전</span>
-            <span v-for="i of pageIndex" :key="i">{{i+a}}</span>
-            <span v-if="this.next" @click="nextpage">다음</span>
-<!--            <v-pagination v-model="page" :length="15" :total-visible="7" ></v-pagination>-->
+            <div>
+                <span v-if ='pager.existPrev'>이전</span>
+                <span @click="pageTransfer(i)" v-for='i of pages' :key="i" >{{i}}</span>
+                <span v-if ='pager.existNext'>다음</span>
+            </div>
+
+            <!--<v-pagination v-model="page" :length="5" :total-visible="5"></v-pagination>-->
         </div>
     </div>
+
+
 </template>
 
 <script>
-    import {mapState} from "vuex";
+    import { mapState } from "vuex";
+    import {proxy} from "../mixins/proxy"
 
     export default {
-        data() {
-            return {
-                page: 1,
-                prev: false,
-                next: true,
-                a: 0,
-                pageIndex:5
-
-            };
-        },
-        created(){
-            alert('홈에서 크리티드 실행됨')
+        mixins : [proxy],
+        created() {
+            let json = proxy.methods.paging(`${this.$store.state.search.context}/movies/null/0`)
+            this.$store.state.search.list = json.movies
+            this.$store.state.search.pages = json.pages
+            this.$store.state.search.pager = json.temp
         },
         computed: {
             ...mapState({
-                movie: state => state.movie.movie,
-                count: state => state.movie.count
-
+                list: state => state.search.list,
+                pages: state => state.search.pages,
+                pager: state => state.search.pager
             })
         },
         methods:{
-            nextpage(){
-                this.a +=5
-                this.prev = true
-            },
-            prevpage(){
-                switch (this.a) {
-                    case 0:
-                        this.prev = false
-                        break;
-                    default:
-                        this.a -=5
-                        break;
+            pageTransfer(d){
 
-                }
+                this.$store.dispatch('search/transferPage',{cate:'movies',searchWord:'null',pageNumber: d-1})
+                alert(`이동 페이지 ${d-1}`)
+
             }
         }
     }
+
+
 </script>
 
 <style scoped>
