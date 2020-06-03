@@ -13,37 +13,37 @@ import java.util.Map;
 
 @CrossOrigin(origins = "*",allowedHeaders = "*")
 @RestController
-@RequestMapping("/movie")
+@RequestMapping("/movies")
 public class MovieController {
     @Autowired Pager pager;
     @Autowired MovieMapper movieMapper;
-    @Autowired  Proxy pxy;
-    @Autowired  Box<Object> box;
-
-    @GetMapping("/list/{pageNumber}/{searchWord}")
+    @Autowired Proxy pxy;
+    @Autowired Box<Object> box;
+    @GetMapping("/{searchWord}/{pageNumber}")
     public Map<?,?> list(@PathVariable("pageNumber") String pageNumber,
-                         @PathVariable("searchWord") String searchWord ){
+                         @PathVariable("searchWord") String searchWord){
 
-        if (searchWord.equals("")){
+        if(searchWord.equals("")){
             pxy.print("검색어가 없음");
-
-        }else {
-            pxy.print("검색어가"+searchWord);
+        }else{
+            pxy.print("검색어가 "+searchWord);
         }
-
+        pxy.print("넘어옴 페이디 번호:"+pageNumber);
         pager.setPageNow(pxy.integer(pageNumber));
+
         pager.setBlockSize(5);
         pager.setPageSize(5);
         pager.paging();
-        IFuntion<Pager, List<MovieDTO>> f = p -> movieMapper.selectMovies(p) ;
+        IFuntion<Pager, List<MovieDTO>> f = p ->  movieMapper.selectMovies(p);
         List<MovieDTO> l = f.apply(pager);
-        pxy.print("***********************************");
+        pxy.print("***********");
         for(MovieDTO m : l){
             pxy.print(m.toString());
         }
         box.clear();
-        box.put("pager",pager);
-        box.put("list",l);
+        box.put("pager", pager);
+        box.put("list", l);
+
         return box.get();
     }
 }
