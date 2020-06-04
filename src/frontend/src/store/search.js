@@ -7,7 +7,8 @@ const  state = {
     pageNumber: '0',
     list : [],
     pages : [],
-    pager: {}
+    pager: {},
+    item: {}
 
 }
 const actions ={
@@ -35,7 +36,19 @@ const actions ={
             })
             .catch()
 
+    },
+
+    async titleClick({commit},payload){
+        axios.
+        get(`${state.context}/${payload.cate}/${payload.searchWord}`)
+            .then(({data})=>{
+                alert(data.title)
+                commit("DETAIL",data)
+                router.push("/detail")
+            })
+            .catch()
     }
+
 
 }
 const mutations ={
@@ -59,6 +72,10 @@ const mutations ={
     TRANSFER(state,data){
         state.pager = data.pager
         state.list = data.list
+    },
+    DETAIL(state,data){
+        state.item = data
+
     }
 }
 

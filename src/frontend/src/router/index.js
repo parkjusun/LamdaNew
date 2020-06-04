@@ -4,6 +4,7 @@ import Retriever from "../components/common/retrive";
 import Soccer from "../components/common/soccer";
 import Movie from "../components/common/movie";
 import Home from "@/components/Home";
+import MovieDetail from "../components/common/MovieDetail"
 
 Vue.use(VueRouter);
 export default new VueRouter({
@@ -13,6 +14,7 @@ export default new VueRouter({
         { path: "/", component: Home },
         { path: "/retriever", component: Retriever },
         { path: "/soccer", component: Soccer },
-        { path: "/movie", component: Movie }
+        { path: "/movie", component: Movie },
+        { path: "/detail", component: MovieDetail }
     ]
 });

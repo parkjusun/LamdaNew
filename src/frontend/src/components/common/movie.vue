@@ -1,6 +1,7 @@
 <template>
     <div>
-        <a @click="myAlert('aaa')"></a>
+        <h3>검색결과 : {{pager.rowCount}}</h3>
+        <span style="float: right"><input id="searWord" type="text" style="border:1px solid black" ><button @click="retrieve">검색</button></span>
         <v-simple-table>
             <template v-slot:default>
                 <thead>
@@ -15,7 +16,7 @@
                 <tr v-for="item of list" :key="item.seq">
                     <td>{{ item.movieSeq }}</td>
                     <td>{{ item.rank}}</td>
-                    <td>{{ item.title }}</td>
+                    <td><a @click="titleClick(item.movieSeq)" href="#">{{ item.title }}</a></td>
                     <td>{{ item.rankDate }}</td>
                 </tr>
                 </tbody>
@@ -23,9 +24,9 @@
         </v-simple-table>
         <div class="text-center" >
             <div>
-                <span v-if ='pager.existPrev'>이전</span>
-                <span @click="pageTransfer(i)" v-for='i of pages' :key="i" >{{i}}</span>
-                <span v-if ='pager.existNext'>다음</span>
+                <span @click="pageTransfer(pager.prevBlock)" v-if ='pager.existPrev'>이전</span>
+                <span @click="pageTransfer(i-1)" v-for='i of pages' :key="i" >{{i}}</span>
+                <span @click="pageTransfer(pager.nextBlock)" v-if ='pager.existNext'>다음</span>
             </div>
 
             <!--<v-pagination v-model="page" :length="5" :total-visible="5"></v-pagination>-->
@@ -38,6 +39,8 @@
 <script>
     import { mapState } from "vuex";
     import {proxy} from "../mixins/proxy"
+
+
 
     export default {
         mixins : [proxy],
@@ -57,8 +60,28 @@
         methods:{
             pageTransfer(d){
 
-                this.$store.dispatch('search/transferPage',{cate:'movies',searchWord:'null',pageNumber: d-1})
+
+                this.$store.dispatch('search/transferPage',{cate:'movies',searchWord:'null',pageNumber: d})
                 alert(`이동 페이지 ${d-1}`)
+
+            },
+            retrieve() {
+                let  searchWord =document.getElementById('searWord').value
+                if (searchWord === "") searchWord = 'null'
+
+               this.$store.dispatch('search/transferPage', {
+                    cate: 'movies',
+                    searchWord: searchWord,
+                    pageNumber: 0
+                })
+
+            },
+            titleClick(movieSeq){
+                this.$store.dispatch('search/titleClick', {
+                    cate: 'movies',
+                    searchWord: movieSeq
+                })
+
 
             }
         }
